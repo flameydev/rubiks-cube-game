@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RUBIK'S CUBE</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--sur:#13131a;--sur2:#1c1c28;--bdr:#2a2a3e;--tx:#e8e8f0;--dim:#6b6b8a;--ac:#7c6cff;--a2:#ff6c9d;--a3:#6cffd4;--glow:rgba(124,108,255,.3)}
+.light{--bg:#f0f0f8;--sur:#fff;--sur2:#e8e8f4;--bdr:#c8c8e0;--tx:#1a1a2e;--dim:#7070a0;--ac:#5a4aff;--a2:#ff3d7f;--a3:#00c9a7;--glow:rgba(90,74,255,.2)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:'Rajdhani',sans-serif;min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s;overflow:hidden}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid var(--bdr);background:var(--sur);flex-shrink:0;flex-wrap:wrap;gap:8px}
+.logo{font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;letter-spacing:4px;background:linear-gradient(135deg,var(--ac),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hb{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.5px;padding:7px 13px;border:1px solid var(--bdr);background:var(--sur2);color:var(--tx);cursor:pointer;border-radius:4px;transition:all .2s;white-space:nowrap}
+.btn:hover{border-color:var(--ac);color:var(--ac);box-shadow:0 0 10px var(--glow)}
+.btn.p{background:var(--ac);border-color:var(--ac);color:#fff}.btn.p:hover{opacity:.85}
+.btn.d{border-color:var(--a2);color:var(--a2)}.btn.d:hover{background:var(--a2);color:#fff}
+.btn.s{border-color:var(--a3);color:var(--a3)}.btn.s:hover{background:var(--a3);color:#000}
+.ib{background:none;border:1px solid var(--bdr);color:var(--tx);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.ib:hover{border-color:var(--ac);box-shadow:0 0 10px var(--glow)}
+.wrap{display:flex;flex:1;overflow:hidden}
+.panel{width:270px;min-width:270px;background:var(--sur);padding:14px;display:flex;flex-direction:column;gap:13px;overflow-y:auto;border-right:1px solid var(--bdr);flex-shrink:0}
+.pr{border-right:none;border-left:1px solid var(--bdr)}
+.sl{font-family:'Space Mono',monospace;font-size:.52rem;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:7px}
+.stats{display:flex;gap:7px}
+.sb{flex:1;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:9px;text-align:center}
+.sv{font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--ac)}
+.sl2{font-size:.62rem;color:var(--dim);margin-top:2px}
+.stbar{font-family:'Space Mono',monospace;font-size:.62rem;padding:8px 10px;border-radius:4px;border:1px solid var(--bdr);background:var(--sur2);color:var(--dim);text-align:center;transition:all .3s}
+.stbar.ok{border-color:var(--a3);color:var(--a3);background:rgba(108,255,212,.05)}
+.stbar.sc{border-color:var(--a2);color:var(--a2)}
+.mlog{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--ac);background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:8px;min-height:60px;max-height:90px;overflow-y:auto;word-break:break-all;line-height:1.9}
+.mb{display:inline-block;background:var(--sur);border:1px solid var(--bdr);padding:1px 5px;border-radius:3px;margin:1px;font-size:.58rem}
+.mb.pr2{color:var(--a2);border-color:var(--a2)}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.ci{background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:5px 8px;display:flex;align-items:center;gap:6px;font-size:.72rem}
+.ck{font-family:'Space Mono',monospace;font-size:.52rem;background:var(--sur);border:1px solid var(--bdr);border-bottom:2px solid var(--bdr);border-radius:3px;padding:2px 4px;color:var(--ac);min-width:40px;text-align:center}
+.div{height:1px;background:var(--bdr);flex-shrink:0}
+.sseq{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--a3);background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:8px;max-height:85px;overflow-y:auto;word-break:break-all;line-height:1.9}
+.sm{display:inline-block;padding:1px 4px;margin:2px;border-radius:3px;background:var(--sur);border:1px solid var(--bdr);cursor:pointer;transition:all .15s}
+.sm:hover{border-color:var(--a3);color:var(--a3)}
+.sm.done{opacity:.3;text-decoration:line-through}
+.sm.cur{border-color:var(--ac);color:var(--ac);box-shadow:0 0 6px var(--glow)}
+.pt{height:3px;background:var(--bdr);border-radius:2px;overflow:hidden;margin-top:7px}
+.pf{height:100%;background:linear-gradient(90deg,var(--ac),var(--a2));transition:width .3s;border-radius:2px}
+.pbr{display:flex;gap:6px;flex-wrap:wrap}
+.notif{position:fixed;top:68px;right:18px;background:var(--sur);border:1px solid var(--ac);color:var(--ac);font-family:'Space Mono',monospace;font-size:.62rem;padding:8px 14px;border-radius:4px;box-shadow:0 0 18px var(--glow);opacity:0;transform:translateY(-8px);transition:all .3s;z-index:999;pointer-events:none}
+.notif.show{opacity:1;transform:translateY(0)}
+.dota span{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--ac);margin:0 2px;animation:bop .9s infinite}
+.dota span:nth-child(2){animation-delay:.15s}.dota span:nth-child(3){animation-delay:.3s}
+@keyframes bop{0%,80%,100%{transform:scale(.5)}40%{transform:scale(1)}}
+.center{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#scene{perspective:720px;display:flex;align-items:center;justify-content:center;cursor:grab;user-select:none;width:100%;height:100%}
+#scene:active{cursor:grabbing}
+#cube{transform-style:preserve-3d;position:relative;width:0;height:0}
+.cubie{position:absolute;width:52px;height:52px;transform-style:preserve-3d}
+/* 6 face stickers */
+.stk{position:absolute;width:48px;height:48px;border-radius:5px;box-shadow:inset 0 0 0 2.5px rgba(0,0,0,.6),inset 2px 2px 0 rgba(255,255,255,.12);transition:background .05s}
+.stk.U{width:48px;height:48px;top:-24px;left:0;transform:rotateX(90deg)}
+.stk.D{width:48px;height:48px;top:24px;left:0;transform:rotateX(-90deg)}
+.stk.F{top:0;left:0;transform:translateZ(26px)}
+.stk.B{top:0;left:0;transform:rotateY(180deg) translateZ(26px)}
+.stk.R{top:0;left:24px;transform:rotateY(90deg)}
+.stk.L{top:0;left:-24px;transform:rotateY(-90deg)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">RUBIK·S</div>
+  <div class="hb">
+    <button class="btn d" id="btn-reset">RESET</button>
+    <button class="btn" id="btn-scramble">AI SCRAMBLE</button>
+    <button class="btn s" id="btn-solve">AI SOLVE</button>
+    <button class="ib" id="btn-dark">🌙</button>
+  </div>
+</header>
+<div class="wrap">
+  <!-- LEFT -->
+  <div class="panel">
+    <div>
+      <div class="sl">Stats</div>
+      <div class="stats">
+        <div class="sb"><div class="sv" id="st-mv">0</div><div class="sl2">MOVES</div></div>
+        <div class="sb"><div class="sv" id="st-tm">0:00</div><div class="sl2">TIME</div></div>
+      </div>
+    </div>
+    <div class="div"></div>
+    <div><div class="sl">Status</div><div class="stbar" id="stbar">READY TO PLAY</div></div>
+    <div>
+      <div class="sl">Move History</div>
+      <div class="mlog" id="mlog">—</div>
+      <div class="pt"><div class="pf" id="pf" style="width:0%"></div></div>
+    </div>
+    <div class="div"></div>
+    <div>
+      <div class="sl">Keyboard Controls</div>
+      <div class="cgrid">
+        <div class="ci"><span class="ck">U</span>Up CW</div><div class="ci"><span class="ck">⇧U</span>Up CCW</div>
+        <div class="ci"><span class="ck">D</span>Down CW</div><div class="ci"><span class="ck">⇧D</span>Down CCW</div>
+        <div class="ci"><span class="ck">R</span>Right CW</div><div class="ci"><span class="ck">⇧R</span>Right CCW</div>
+        <div class="ci"><span class="ck">L</span>Left CW</div><div class="ci"><span class="ck">⇧L</span>Left CCW</div>
+        <div class="ci"><span class="ck">F</span>Front CW</div><div class="ci"><span class="ck">⇧F</span>Front CCW</div>
+        <div class="ci"><span class="ck">B</span>Back CW</div><div class="ci"><span class="ck">⇧B</span>Back CCW</div>
+        <div class="ci"><span class="ck">M</span>M-slice</div><div class="ci"><span class="ck">E</span>E-slice</div>
+        <div class="ci"><span class="ck">S</span>S-slice</div><div class="ci"><span class="ck">X</span>X-rot</div>
+        <div class="ci"><span class="ck">Y</span>Y-rot</div><div class="ci"><span class="ck">Z</span>Z-rot</div>
+      </div>
+      <div style="margin-top:7px;font-size:.68rem;color:var(--dim)">Drag to rotate view · ⇧ = CCW</div>
+    </div>
+  </div>
+
+  <!-- CUBE -->
+  <div class="center"><div id="scene"><div id="cube"></div></div></div>
+
+  <!-- RIGHT -->
+  <div class="panel pr">
+    <div><div class="sl">AI Solution</div><div class="stbar" id="ai-st">NO SOLUTION YET</div></div>
+    <div><div class="sl">Solution Sequence</div><div class="sseq" id="solseq">Press AI SOLVE to generate</div></div>
+    <div>
+      <div class="sl">Playback</div>
+      <div class="pbr">
+        <button class="btn" id="sol-prev">◀ PREV</button>
+        <button class="btn p" id="sol-next">NEXT ▶</button>
+        <button class="btn" id="sol-auto">AUTO PLAY</button>
+        <button class="btn" id="sol-all">APPLY ALL</button>
+      </div>
+    </div>
+    <div class="div"></div>
+    <div>
+      <div class="sl">Scramble Sequence</div>
+      <div style="margin-bottom:7px;font-size:.7rem;color:var(--dim)" id="scr-hint">Moves hidden. Revealing them marks your solve as <span style="color:var(--a2)">INVALID</span>.</div>
+      <button class="btn" id="btn-reveal" style="width:100%;margin-bottom:7px">👁 REVEAL SCRAMBLE</button>
+      <div class="sseq" id="scrseq" style="color:var(--a2);display:none">No scramble yet</div>
+    </div>
+  </div>
+</div>
+<div class="notif" id="notif"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════
+//  CUBIE-OBJECT MODEL
+//  Each cubie tracks its grid position (x,y,z ∈ {-1,0,1}) and a sticker map
+//  { faceKey → cssColor } where faceKey is the CURRENT outward direction
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const FACE_COLOR = { U:'#f0f0f0', D:'#f5d000', F:'#e8281e', B:'#f57820', R:'#1a4fc4', L:'#18a846' };
+const INNER_COL  = 'transparent';
+
+// ----- integer vec3 -----
+const V = (x,y,z) => ({x,y,z});
+const veq = (a,b) => Math.round(a.x)===Math.round(b.x) && Math.round(a.y)===Math.round(b.y) && Math.round(a.z)===Math.round(b.z);
+
+// Rotate an integer vec3 90° around axis, dir=+1 CW from +axis, dir=-1 CCW
+function vrot(v, axis, dir) {
+  let {x,y,z}=v, nx=x,ny=y,nz=z;
+  const d=dir;
+  if(axis==='x'){ ny=-d*z; nz= d*y; nx=x; }
+  if(axis==='y'){ nz=-d*x; nx= d*z; ny=y; }
+  if(axis==='z'){ nx=-d*y; ny= d*x; nz=z; }
+  return V(Math.round(nx),Math.round(ny),Math.round(nz));
+}
+
+// Face direction vectors
+const FDIR = [
+  {k:'U',v:V( 0, 1, 0)},
+  {k:'D',v:V( 0,-1, 0)},
+  {k:'F',v:V( 0, 0, 1)},
+  {k:'B',v:V( 0, 0,-1)},
+  {k:'R',v:V( 1, 0, 0)},
+  {k:'L',v:V(-1, 0, 0)},
+];
+const vToKey = v => FDIR.find(f=>veq(f.v,v)).k;
+const keyToV = k => FDIR.find(f=>f.k===k).v;
+
+// Create one cubie at grid position (x,y,z)
+function mkCubie(x,y,z) {
+  const stk = {};
+  if(y=== 1) stk.U = FACE_COLOR.U;
+  if(y===-1) stk.D = FACE_COLOR.D;
+  if(z=== 1) stk.F = FACE_COLOR.F;
+  if(z===-1) stk.B = FACE_COLOR.B;
+  if(x=== 1) stk.R = FACE_COLOR.R;
+  if(x===-1) stk.L = FACE_COLOR.L;
+  return { pos:V(x,y,z), stk };
+}
+
+// Full cube: 26 cubies (skip center)
+function initCubies() {
+  const cs=[];
+  for(let x=-1;x<=1;x++) for(let y=-1;y<=1;y++) for(let z=-1;z<=1;z++)
+    if(!(x===0&&y===0&&z===0)) cs.push(mkCubie(x,y,z));
+  return cs;
+}
+
+function cloneC(cs) { return cs.map(c=>({pos:V(c.pos.x,c.pos.y,c.pos.z),stk:{...c.stk}})); }
+
+// Move definitions: axis, layer (null=whole cube), d = rotation direction
+// vrot(v,'y',+1) rotates the y-axis right-hand: x→z→-x→-z (i.e. F→L→B→R in top layer)
+// Rubik's U CW (viewed from top): F→R→B→L, so we need dir=-1 in math terms.
+// Systematic derivation for each face:
+//   U  CW from +Y: F col goes to L  → that's vrot dir=-1 on Y  (F→R is dir=+1 but CSS flips Y so use +1 here and cssSign handles display)
+// Actually: let's just verify empirically by the state-only path.
+// vrot with axis=y, dir=+1: (x,y,z)→(z,y,-x). Check: F(0,0,1)→(1,0,0)=R. So dir=+1 means F→R for top layer = U CW ✓
+// vrot axis=y, dir=-1: F→L = U CCW ✓
+// vrot axis=x, dir=+1: (x,y,z)→(x,-z,y). Check: U(0,1,0)→(0,0,1)=F. R face CW from right = U→F→D→B, which is dir=+1 ✓
+// vrot axis=x, dir=-1: R' ✓
+// L CW (from left, i.e. -X): viewed from left U→B→D→F. That's opposite of R's U→F→D→B. So dir=-1 on x-axis ✓
+// vrot axis=z, dir=+1: (x,y,z)→(-y,x,z). Check: U(0,1,0)→(-1,0,0)=L. F face CW from front: U→R→D→L. dir=+1 gives U→L which is F CCW.
+//   So F CW = dir=-1 on z. Verify: vrot(U,z,-1)=(1,0,0)=R ✓ U→R = F CW ✓
+// B CW (from back, -Z): viewed from back U→L→D→R. dir=+1 on z gives U→L ✓
+const MDEFS = {
+  'U' :{ax:'y',lay: 1,d: 1},"U'":{ax:'y',lay: 1,d:-1},'U2':{ax:'y',lay: 1,d: 2},
+  'D' :{ax:'y',lay:-1,d:-1},"D'":{ax:'y',lay:-1,d: 1},'D2':{ax:'y',lay:-1,d: 2},
+  'R' :{ax:'x',lay: 1,d: 1},"R'":{ax:'x',lay: 1,d:-1},'R2':{ax:'x',lay: 1,d: 2},
+  'L' :{ax:'x',lay:-1,d:-1},"L'":{ax:'x',lay:-1,d: 1},'L2':{ax:'x',lay:-1,d: 2},
+  'F' :{ax:'z',lay: 1,d:-1},"F'":{ax:'z',lay: 1,d: 1},'F2':{ax:'z',lay: 1,d: 2},
+  'B' :{ax:'z',lay:-1,d: 1},"B'":{ax:'z',lay:-1,d:-1},'B2':{ax:'z',lay:-1,d: 2},
+  'M' :{ax:'x',lay: 0,d:-1},"M'":{ax:'x',lay: 0,d: 1},
+  'E' :{ax:'y',lay: 0,d:-1},"E'":{ax:'y',lay: 0,d: 1},
+  'S' :{ax:'z',lay: 0,d:-1},"S'":{ax:'z',lay: 0,d: 1},
+  'x' :{ax:'x',lay:null,d: 1},"x'":{ax:'x',lay:null,d:-1},
+  'y' :{ax:'y',lay:null,d: 1},"y'":{ax:'y',lay:null,d:-1},
+  'z' :{ax:'z',lay:null,d:-1},"z'":{ax:'z',lay:null,d: 1},
+};
+
+function applyMove(cs, move) {
+  const def = MDEFS[move]; if(!def) return cs;
+  const {ax,lay,d} = def;
+  const times = Math.abs(d)===2 ? 2 : 1;
+  const dir = d<0 ? -1 : 1;
+  for(let t=0;t<times;t++){
+    cs.forEach(c=>{
+      const val = Math.round(c.pos[ax]);
+      if(lay===null || val===lay){
+        c.pos = vrot(c.pos, ax, dir);
+        const ns={};
+        for(const [k,col] of Object.entries(c.stk)){
+          const nv = vrot(keyToV(k), ax, dir);
+          ns[vToKey(nv)] = col;
+        }
+        c.stk = ns;
+      }
+    });
+  }
+  return cs;
+}
+
+function isSolved(cs){
+  const buckets={U:[],D:[],F:[],B:[],R:[],L:[]};
+  cs.forEach(c=>Object.entries(c.stk).forEach(([k,v])=>buckets[k]&&buckets[k].push(v)));
+  return Object.values(buckets).every(a=>a.length===9&&a.every(v=>v===a[0]));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  DOM LAYER
+// ═══════════════════════════════════════════════════════════════════════════════
+const SZ=52, GAP=2, STEP=SZ+GAP;
+const cubeEl=document.getElementById('cube');
+let cubies=initCubies();
+let cubieEls=[];
+
+function buildDOM(){
+  cubeEl.innerHTML=''; cubieEls=[];
+  cubies.forEach((c,i)=>{
+    const el=document.createElement('div');
+    el.className='cubie';
+    ['U','D','F','B','R','L'].forEach(f=>{
+      const s=document.createElement('div');
+      s.className=`stk ${f}`; s.dataset.f=f;
+      el.appendChild(s);
+    });
+    cubeEl.appendChild(el);
+    cubieEls.push(el);
+  });
+}
+
+function syncDOM(){
+  cubies.forEach((c,i)=>{
+    const el=cubieEls[i];
+    const px=c.pos.x*STEP, py=-c.pos.y*STEP, pz=c.pos.z*STEP;
+    el.style.transform=`translate3d(${px-SZ/2}px,${py-SZ/2}px,${pz}px)`;
+    el.querySelectorAll('.stk').forEach(s=>{
+      const col=c.stk[s.dataset.f];
+      if(col){ s.style.background=col; s.style.opacity='1'; }
+      else{ s.style.background=INNER_COL; s.style.opacity='0'; }
+    });
+  });
+}
+
+buildDOM(); syncDOM();
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  ANIMATED MOVE QUEUE
+// ═══════════════════════════════════════════════════════════════════════════════
+let animating=false, queue=[];
+let moveCount=0, moveHistory=[];
+let timerStart=null, timerInt=null;
+
+// Animate one move: spin a pivot group, then commit to state
+function animateMove(move, ms, done){
+  const def=MDEFS[move]; if(!def){done&&done();return;}
+  const {ax,lay,d}=def;
+  const times=Math.abs(d)===2?2:1;
+  const dir=d<0?-1:1;
+
+  // For double moves, animate twice sequentially
+  if(times===2){
+    animateMove(move[0], ms*0.7, ()=>animateMove(move[0], ms*0.7, done));
+    return;
+  }
+
+  const affected=[]; // indices
+  cubies.forEach((c,i)=>{ const v=Math.round(c.pos[ax]); if(lay===null||v===lay) affected.push(i); });
+
+  // Pivot group
+  const pivot=document.createElement('div');
+  pivot.style.cssText='position:absolute;width:0;height:0;transform-style:preserve-3d';
+  cubeEl.appendChild(pivot);
+  affected.forEach(i=>pivot.appendChild(cubieEls[i]));
+
+  // CSS 3D: rotateY(+90) visually goes the OPPOSITE direction to math +Y rotation
+  // because CSS Y-axis points DOWN (screen space). Same for Z. X is fine.
+  // So to make the animation match the state commit, negate Y and Z CSS angles.
+  const cssAxis={x:'rotateX',y:'rotateY',z:'rotateZ'};
+  const cssSign = (ax==='x') ? 1 : -1;
+  const targetDeg = 90 * dir * cssSign;
+
+  let t0=null;
+  function frame(ts){
+    if(!t0) t0=ts;
+    const p=Math.min((ts-t0)/ms,1);
+    const e=p<.5?2*p*p:-1+(4-2*p)*p;
+    pivot.style.transform=`${cssAxis[ax]}(${targetDeg*e}deg)`;
+    if(p<1){requestAnimationFrame(frame);return;}
+
+    // Commit state — identical direction to the visual animation
+    affected.forEach(i=>{
+      const c=cubies[i];
+      c.pos=vrot(c.pos,ax,dir);
+      const ns={};
+      Object.entries(c.stk).forEach(([k,col])=>{ ns[vToKey(vrot(keyToV(k),ax,dir))]=col; });
+      c.stk=ns;
+    });
+
+    // Reparent back & sync
+    affected.forEach(i=>{ cubeEl.appendChild(cubieEls[i]); cubieEls[i].style.transform=''; });
+    pivot.remove();
+    syncDOM();
+    done&&done();
+  }
+  requestAnimationFrame(frame);
+}
+
+function runQueue(){
+  if(animating||!queue.length) return;
+  const {move,user,speed,cb}=queue.shift();
+  animating=true;
+  animateMove(move, speed||180, ()=>{
+    animating=false;
+    if(user){
+      moveHistory.push(move); moveCount++;
+      document.getElementById('st-mv').textContent=moveCount;
+      updateLog();
+      if(!timerStart) startTimer();
+      checkSolved();
+    }
+    cb&&cb();
+    runQueue();
+  });
+}
+
+function doMove(move,user=false,speed=180,cb){
+  queue.push({move,user,speed,cb}); runQueue();
+}
+function doInstant(move){ applyMove(cubies,move); }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  VIEW DRAG
+// ═══════════════════════════════════════════════════════════════════════════════
+let vx=-28,vy=38,drag=null;
+function applyView(){ cubeEl.style.transform=`rotateX(${vx}deg) rotateY(${vy}deg)`; }
+applyView();
+
+const sc=document.getElementById('scene');
+sc.addEventListener('mousedown',e=>{drag={x:e.clientX,y:e.clientY,vx,vy};});
+window.addEventListener('mousemove',e=>{ if(!drag)return; vy=drag.vy+(e.clientX-drag.x)*.5; vx=drag.vx-(e.clientY-drag.y)*.5; applyView(); });
+window.addEventListener('mouseup',()=>drag=null);
+sc.addEventListener('touchstart',e=>{const t=e.touches[0];drag={x:t.clientX,y:t.clientY,vx,vy};},{passive:true});
+window.addEventListener('touchmove',e=>{if(!drag)return;const t=e.touches[0];vy=drag.vy+(t.clientX-drag.x)*.5;vx=drag.vx-(t.clientY-drag.y)*.5;applyView();},{passive:true});
+window.addEventListener('touchend',()=>drag=null);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  KEYBOARD
+// ═══════════════════════════════════════════════════════════════════════════════
+const KMAP={U:'U',D:'D',R:'R',L:'L',F:'F',B:'B',M:'M',E:'E',S:'S',X:'x',Y:'y',Z:'z'};
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  const k=e.key.toUpperCase(); if(!KMAP[k]) return;
+  e.preventDefault();
+  const base=KMAP[k]; const mv=e.shiftKey?base+"'":base;
+  if(MDEFS[mv]) doMove(mv,true,175);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  TIMER / STATUS
+// ═══════════════════════════════════════════════════════════════════════════════
+function startTimer(){ timerStart=Date.now(); timerInt=setInterval(()=>{ const s=Math.floor((Date.now()-timerStart)/1000); document.getElementById('st-tm').textContent=`${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; },400); }
+function stopTimer(){ clearInterval(timerInt);timerInt=null; }
+function checkSolved(){
+  if(isSolved(cubies)){
+    if(solveInvalid){
+      document.getElementById('stbar').textContent='✓ SOLVED (INVALID — scramble was revealed)';
+      document.getElementById('stbar').className='stbar sc';
+      stopTimer(); showNotif('Solved, but marked invalid (scramble was revealed)');
+    } else {
+      document.getElementById('stbar').textContent='✓ SOLVED!';
+      document.getElementById('stbar').className='stbar ok';
+      stopTimer(); showNotif('🎉 SOLVED! Congratulations!');
+    }
+  } else {
+    if(!solveInvalid){
+      document.getElementById('stbar').textContent='IN PROGRESS';
+      document.getElementById('stbar').className='stbar sc';
+    }
+  }
+}
+function updateLog(){
+  const l=document.getElementById('mlog');
+  if(!moveHistory.length){l.innerHTML='—';return;}
+  l.innerHTML=moveHistory.slice(-50).map(m=>`<span class="mb${m.includes("'")||m.includes('2')?' pr2':''}">${m}</span>`).join('');
+  l.scrollTop=l.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  SCRAMBLE
+// ═══════════════════════════════════════════════════════════════════════════════
+const SCR_MVS=["U","U'","U2","D","D'","D2","R","R'","R2","L","L'","L2","F","F'","F2","B","B'","B2"];
+
+let scrambleMoves=[], scrambleRevealed=false, solveInvalid=false;
+
+function resetState(){
+  queue.length=0; animating=false;
+  stopAutoPlay(); stopTimer();
+  cubies=initCubies(); buildDOM(); syncDOM();
+  moveHistory=[]; moveCount=0; timerStart=null;
+  solMoves=[]; solIdx=0; preSol=null;
+  scrambleMoves=[]; scrambleRevealed=false; solveInvalid=false;
+  document.getElementById('st-mv').textContent='0';
+  document.getElementById('st-tm').textContent='0:00';
+  document.getElementById('ai-st').textContent='NO SOLUTION YET';
+  document.getElementById('solseq').textContent='Press AI SOLVE to generate';
+  document.getElementById('pf').style.width='0%';
+  // Reset scramble reveal
+  document.getElementById('scrseq').style.display='none';
+  document.getElementById('scrseq').innerHTML='';
+  document.getElementById('btn-reveal').textContent='👁 REVEAL SCRAMBLE';
+  document.getElementById('btn-reveal').disabled=true;
+  document.getElementById('scr-hint').style.display='block';
+  updateLog();
+}
+
+function aiScramble(){
+  resetState();
+  const n=20+Math.floor(Math.random()*6);
+  const scr=[]; let lf='';
+  for(let i=0;i<n;i++){
+    let mv; do{ mv=SCR_MVS[Math.floor(Math.random()*SCR_MVS.length)]; }while(mv[0]===lf);
+    scr.push(mv); lf=mv[0];
+  }
+  scrambleMoves=scr;
+
+  // Animate the scramble moves at fast but visible speed
+  document.getElementById('stbar').textContent='SCRAMBLING...';
+  document.getElementById('stbar').className='stbar sc';
+  document.getElementById('btn-scramble').disabled=true;
+
+  let i=0;
+  function nextMove(){
+    if(i>=scr.length){
+      document.getElementById('stbar').textContent='SCRAMBLED — solve it!';
+      document.getElementById('btn-scramble').disabled=false;
+      document.getElementById('btn-reveal').disabled=false;
+      showNotif(`Scrambled: ${n} moves`);
+      return;
+    }
+    doMove(scr[i], false, 95, nextMove);
+    i++;
+  }
+  nextMove();
+}
+
+document.getElementById('btn-reveal').onclick=function(){
+  if(!scrambleMoves.length) return;
+  if(!scrambleRevealed){
+    scrambleRevealed=true; solveInvalid=true;
+    document.getElementById('scrseq').innerHTML=scrambleMoves.map(m=>`<span class="sm">${m}</span>`).join(' ');
+    document.getElementById('scrseq').style.display='block';
+    this.textContent='🙈 HIDE SCRAMBLE';
+    // Mark solve as invalid
+    document.getElementById('stbar').textContent='SCRAMBLED (solve INVALID)';
+    document.getElementById('stbar').className='stbar sc';
+    showNotif('⚠ Scramble revealed — solve marked invalid');
+  } else {
+    scrambleRevealed=false;
+    document.getElementById('scrseq').style.display='none';
+    this.textContent='👁 REVEAL SCRAMBLE';
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  AI SOLVER  (IDA* with face-colour heuristic)
+// ═══════════════════════════════════════════════════════════════════════════════
+let solMoves=[], solIdx=0, preSol=null;
+let autoTimer=null, autoPlay=false;
+
+// Heuristic: stickers not matching their centre cubie colour / 4
+function heur(cs){
+  // Find centre cubie for each face (the one with exactly 1 sticker)
+  const centres={};
+  cs.forEach(c=>{ if(Object.keys(c.stk).length===1){ const [k,v]=Object.entries(c.stk)[0]; centres[k]=v; } });
+  let wrong=0;
+  cs.forEach(c=>Object.entries(c.stk).forEach(([k,v])=>{ if(centres[k]&&v!==centres[k]) wrong++; }));
+  return Math.ceil(wrong/4);
+}
+
+function isSolvedCS(cs){
+  const b={U:[],D:[],F:[],B:[],R:[],L:[]};
+  cs.forEach(c=>Object.entries(c.stk).forEach(([k,v])=>b[k]&&b[k].push(v)));
+  return Object.values(b).every(a=>a.length===9&&a.every(v=>v===a[0]));
+}
+
+const SOL_MVS=["U","U'","U2","D","D'","D2","R","R'","R2","L","L'","L2","F","F'","F2","B","B'","B2"];
+
+function idaStar(start){
+  let bound=heur(start);
+  const path=[];
+  for(let iter=0;iter<35;iter++){
+    const r=dfs(start,path,0,bound,'','');
+    if(r==='FOUND') return path;
+    if(r===Infinity||r>18) break;
+    bound=r;
+  }
+  return beamSolve(cloneC(start));
+}
+
+function dfs(cs,path,g,bound,lastFace,lastFace2){
+  const f=g+heur(cs);
+  if(f>bound) return f;
+  if(isSolvedCS(cs)) return 'FOUND';
+  if(g>=bound) return f;
+  let min=Infinity;
+  for(const mv of SOL_MVS){
+    const face=mv[0];
+    if(face===lastFace) continue;
+    // opposite face commutes: skip U after D etc to avoid redundancy
+    if((lastFace==='U'&&face==='D')||(lastFace==='D'&&face==='U')) continue;
+    if((lastFace==='R'&&face==='L')||(lastFace==='L'&&face==='R')) continue;
+    if((lastFace==='F'&&face==='B')||(lastFace==='B'&&face==='F')) continue;
+    const next=cloneC(cs);
+    applyMove(next,mv);
+    path.push(mv);
+    const t=dfs(next,path,g+1,bound,face,lastFace);
+    if(t==='FOUND') return 'FOUND';
+    if(t<min) min=t;
+    path.pop();
+  }
+  return min;
+}
+
+// Beam search fallback for deeper scrambles
+function beamSolve(start){
+  let beam=[{cs:start,path:[]}];
+  for(let d=0;d<26;d++){
+    const next=[];
+    for(const node of beam){
+      const lf=node.path.length?node.path[node.path.length-1][0]:'';
+      for(const mv of SOL_MVS){
+        if(mv[0]===lf) continue;
+        const nc=cloneC(node.cs);
+        applyMove(nc,mv);
+        const np=[...node.path,mv];
+        if(isSolvedCS(nc)) return np;
+        next.push({cs:nc,path:np,h:heur(nc)});
+      }
+    }
+    next.sort((a,b)=>a.h-b.h);
+    beam=next.slice(0,14);
+    if(!beam.length) break;
+  }
+  return beam[0]?.path||null;
+}
+
+function aiSolve(){
+  if(isSolved(cubies)){showNotif('Already solved!');return;}
+  const el=document.getElementById('ai-st');
+  el.innerHTML='<div style="display:flex;align-items:center;gap:6px;justify-content:center">Computing <div class="dota"><span></span><span></span><span></span></div></div>';
+  preSol=cloneC(cubies);
+  setTimeout(()=>{
+    const sol=idaStar(cloneC(cubies));
+    if(!sol){el.textContent='No solution found';return;}
+    solMoves=sol; solIdx=0;
+    el.textContent=`Solution: ${sol.length} moves`;
+    renderSol();
+    showNotif(`Solution: ${sol.length} moves`);
+  },25);
+}
+
+function renderSol(){
+  const el=document.getElementById('solseq');
+  if(!solMoves.length){el.textContent='No solution';return;}
+  el.innerHTML=solMoves.map((m,i)=>{
+    let c='sm';
+    if(i<solIdx) c+=' done';
+    if(i===solIdx) c+=' cur';
+    return `<span class="${c}">${m}</span>`;
+  }).join(' ');
+  document.getElementById('pf').style.width=`${(solIdx/solMoves.length)*100}%`;
+  el.querySelector('.cur')?.scrollIntoView({block:'nearest'});
+}
+
+document.getElementById('sol-next').onclick=()=>{
+  if(animating||!solMoves.length||solIdx>=solMoves.length) return;
+  const mv=solMoves[solIdx++]; renderSol();
+  doMove(mv,false,220,()=>checkSolved());
+};
+document.getElementById('sol-prev').onclick=()=>{
+  if(animating||solIdx<=0||!preSol) return;
+  solIdx--;
+  cubies=cloneC(preSol);
+  for(let i=0;i<solIdx;i++) doInstant(solMoves[i]);
+  buildDOM(); syncDOM(); renderSol();
+};
+document.getElementById('sol-all').onclick=()=>{
+  if(!solMoves.length) return;
+  stopAutoPlay();
+  while(solIdx<solMoves.length) doInstant(solMoves[solIdx++]);
+  buildDOM(); syncDOM(); renderSol(); checkSolved();
+  showNotif('Solution applied!');
+};
+document.getElementById('sol-auto').onclick=function(){
+  if(autoPlay){stopAutoPlay();return;}
+  if(!solMoves.length) return;
+  autoPlay=true; this.textContent='⏹ STOP';
+  function step(){
+    if(!autoPlay||solIdx>=solMoves.length){stopAutoPlay();checkSolved();return;}
+    const mv=solMoves[solIdx++]; renderSol();
+    doMove(mv,false,260);
+    autoTimer=setTimeout(step,340);
+  }
+  step();
+};
+function stopAutoPlay(){ autoPlay=false; clearTimeout(autoTimer); document.getElementById('sol-auto').textContent='AUTO PLAY'; }
+
+document.getElementById('btn-solve').onclick=()=>{preSol=cloneC(cubies);aiSolve();};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  RESET / DARK
+// ═══════════════════════════════════════════════════════════════════════════════
+document.getElementById('btn-reset').onclick=()=>{
+  resetState();
+  document.getElementById('stbar').textContent='READY TO PLAY';
+  document.getElementById('stbar').className='stbar';
+  showNotif('Cube reset to solved state');
+};
+document.getElementById('btn-scramble').onclick=aiScramble;
+
+// Init reveal button as disabled on load (no scramble yet)
+document.getElementById('btn-reveal').disabled=true;
+
+let dark=true;
+document.getElementById('btn-dark').onclick=()=>{
+  dark=!dark; document.body.classList.toggle('light',!dark);
+  document.getElementById('btn-dark').textContent=dark?'🌙':'☀️';
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  NOTIF
+// ═══════════════════════════════════════════════════════════════════════════════
+let nt;
+function showNotif(msg){ const e=document.getElementById('notif'); e.textContent=msg; e.classList.add('show'); clearTimeout(nt); nt=setTimeout(()=>e.classList.remove('show'),2600); }
+</script>
+</body>
+</html>
